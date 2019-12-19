@@ -1,10 +1,9 @@
-import 'package:chuck/joke.dart';
+import 'package:chuck/api.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,7 +14,6 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: 'Chuck Norris facts'),
     );
   }
-
 }
 
 class MyHomePage extends StatefulWidget {
@@ -28,7 +26,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  
+  Future<List<String>> categories;
   Future<Joke> joke;
 
   void _fetchJoke() {
@@ -40,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    categories = fetchCategories();
     joke = fetchRandomJoke();
   }
 
@@ -53,6 +52,25 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Expanded(
+              child: FutureBuilder<List<String>>(
+                future: categories,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, position) {
+                        return Text(snapshot.data.elementAt(position));
+                      },
+                      scrollDirection: Axis.horizontal,
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+
+                  return SizedBox.shrink();
+                }),
+            ),
             FutureBuilder<Joke>(
                 future: joke,
                 builder: (context, snapshot) {
@@ -63,8 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
 
                   return CircularProgressIndicator();
-                }
-              )
+                })
           ],
         ),
       ),

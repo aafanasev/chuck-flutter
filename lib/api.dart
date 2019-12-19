@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Joke {
-  
   final String id;
   final String value;
   final String url;
@@ -19,7 +18,6 @@ class Joke {
       iconUrl: json['icon_url'],
     );
   }
-
 }
 
 Future<Joke> fetchRandomJoke() async {
@@ -29,5 +27,22 @@ Future<Joke> fetchRandomJoke() async {
     return Joke.fromJson(json.decode(response.body));
   } else {
     throw Exception("Failed to load a joke");
+  }
+}
+
+Future<List<String>> fetchCategories() async {
+  final response =
+      await http.get("https://api.chucknorris.io/jokes/categories");
+
+  if (response.statusCode == 200) {
+    var res = List<String>();
+
+    (json.decode(response.body) as List).forEach((f) {
+      res.add(f.toString());
+    });
+
+    return res;
+  } else {
+    throw Exception("Failed to load categories");
   }
 }
