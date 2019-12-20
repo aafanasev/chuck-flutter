@@ -100,9 +100,26 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         Row(
           children: <Widget>[
-            Icon(Icons.search),
-            Icon(Icons.update),
-            Icon(Icons.share)
+            Expanded(
+              child: Icon(
+                Icons.search,
+                size: 50,
+              ),
+            ),
+            Expanded(
+                child: GestureDetector(
+              child: Icon(
+                Icons.update,
+                size: 100,
+              ),
+              onTap: _fetchJoke,
+            )),
+            Expanded(
+              child: Icon(
+                Icons.share,
+                size: 50,
+              ),
+            ),
           ],
         )
       ])),
