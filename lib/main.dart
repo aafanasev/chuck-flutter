@@ -1,4 +1,5 @@
 import 'package:chuck/api.dart';
+import 'package:chuck/mapper.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -49,47 +50,62 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              child: FutureBuilder<List<String>>(
-                future: categories,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, position) {
-                        return Text(snapshot.data.elementAt(position));
-                      },
-                      scrollDirection: Axis.horizontal,
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
-                  }
+          child: Column(children: <Widget>[
+        Container(
+          height: 100,
+          child: FutureBuilder<List<String>>(
+              future: categories,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.all(8),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, position) {
+                      return Icon(
+                        icons[snapshot.data.elementAt(position)],
+                        color: Colors.teal,
+                        size: 40,
+                        semanticLabel: snapshot.data.elementAt(position),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
 
-                  return SizedBox.shrink();
-                }),
-            ),
-            FutureBuilder<Joke>(
-                future: joke,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(snapshot.data.value);
-                  } else if (snapshot.hasError) {
-                    return Text(snapshot.error);
-                  }
-
-                  return CircularProgressIndicator();
-                })
-          ],
+                return SizedBox.shrink();
+              }),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _fetchJoke,
-        tooltip: 'Random joke',
-        child: Icon(Icons.add),
-      ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Center(
+              child: FutureBuilder<Joke>(
+                  future: joke,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        snapshot.data.value,
+                        textAlign: TextAlign.center,
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    }
+
+                    return CircularProgressIndicator();
+                  }),
+            ),
+          ),
+        ),
+        Row(
+          children: <Widget>[
+            Icon(Icons.search),
+            Icon(Icons.update),
+            Icon(Icons.share)
+          ],
+        )
+      ])),
     );
   }
 }
